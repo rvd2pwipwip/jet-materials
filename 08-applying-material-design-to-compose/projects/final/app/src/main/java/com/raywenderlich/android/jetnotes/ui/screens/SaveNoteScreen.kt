@@ -1,22 +1,21 @@
 package com.raywenderlich.android.jetnotes.ui.screens
 
-import androidx.compose.foundation.ScrollableColumn
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.savedinstancestate.savedInstanceState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,11 +27,12 @@ import com.raywenderlich.android.jetnotes.domain.model.NoteModel
 import com.raywenderlich.android.jetnotes.routing.JetNotesRouter
 import com.raywenderlich.android.jetnotes.routing.Screen
 import com.raywenderlich.android.jetnotes.ui.components.NoteColor
-import com.raywenderlich.android.jetnotes.util.BackPressHandler
 import com.raywenderlich.android.jetnotes.util.fromHex
 import com.raywenderlich.android.jetnotes.viewmodel.MainViewModel
+import kotlinx.coroutines.launch
 
 @Composable
+@ExperimentalMaterialApi
 fun SaveNoteScreen(viewModel: MainViewModel) {
 
   val noteEntry: NoteModel by viewModel.noteEntry
@@ -44,15 +44,19 @@ fun SaveNoteScreen(viewModel: MainViewModel) {
   val bottomDrawerState: BottomDrawerState =
     rememberBottomDrawerState(BottomDrawerValue.Closed)
 
-  BackPressHandler(onBackPressed = {
+  val coroutineScope = rememberCoroutineScope()
+
+  BackHandler(onBack = {
     if (bottomDrawerState.isOpen) {
-      bottomDrawerState.close()
+      coroutineScope.launch { bottomDrawerState.close() }
     } else {
       JetNotesRouter.navigateTo(Screen.Notes)
     }
   })
 
-  val moveNoteToTrashDialogShownState: MutableState<Boolean> = savedInstanceState { false }
+  val moveNoteToTrashDialogShownState: MutableState<Boolean> = rememberSaveable {
+    mutableStateOf(false)
+  }
 
   Scaffold(
     topBar = {
@@ -63,14 +67,16 @@ fun SaveNoteScreen(viewModel: MainViewModel) {
           JetNotesRouter.navigateTo(Screen.Notes)
         },
         onSaveNoteClick = { viewModel.saveNote(noteEntry) },
-        onOpenColorPickerClick = { bottomDrawerState.open() },
+        onOpenColorPickerClick = {
+          coroutineScope.launch { bottomDrawerState.open() }
+        },
         onDeleteNoteClick = {
           moveNoteToTrashDialogShownState.value = true
         }
       )
     },
-    bodyContent = {
-      BottomDrawerLayout(
+    content = {
+      BottomDrawer(
         drawerState = bottomDrawerState,
         drawerContent = {
           ColorPicker(
@@ -81,7 +87,7 @@ fun SaveNoteScreen(viewModel: MainViewModel) {
             }
           )
         },
-        bodyContent = {
+        content = {
           SaveNoteContent(
             note = noteEntry,
             onNoteChange = { updateNoteEntry ->
@@ -100,7 +106,7 @@ fun SaveNoteScreen(viewModel: MainViewModel) {
               text = {
                 Text(
                   "Are you sure you want to " +
-                      "move this note to the trash?"
+                    "move this note to the trash?"
                 )
               },
               confirmButton = {
@@ -142,7 +148,10 @@ private fun SaveNoteTopAppBar(
     },
     navigationIcon = {
       IconButton(onClick = onBackClick) {
-        Icon(imageVector = Icons.Filled.ArrowBack)
+        Icon(
+          imageVector = Icons.Filled.ArrowBack,
+          contentDescription = "Back Button"
+        )
       }
     },
     actions = {
@@ -150,6 +159,7 @@ private fun SaveNoteTopAppBar(
       IconButton(onClick = onSaveNoteClick) {
         Icon(
           imageVector = Icons.Default.Check,
+          contentDescription = "Save Note Button",
           tint = MaterialTheme.colors.onPrimary
         )
       }
@@ -157,9 +167,10 @@ private fun SaveNoteTopAppBar(
       // Open color picker action icon
       IconButton(onClick = onOpenColorPickerClick) {
         Icon(
-          imageVector = vectorResource(
+          painter = painterResource(
             id = R.drawable.ic_baseline_color_lens_24
           ),
+          contentDescription = "Open Color Picker Button",
           tint = MaterialTheme.colors.onPrimary
         )
       }
@@ -168,6 +179,7 @@ private fun SaveNoteTopAppBar(
         IconButton(onClick = onDeleteNoteClick) {
           Icon(
             imageVector = Icons.Default.Delete,
+            contentDescription = "Delete Note Button",
             tint = MaterialTheme.colors.onPrimary
           )
         }
@@ -232,7 +244,7 @@ private fun ContentTextField(
     modifier = modifier
       .fillMaxWidth()
       .padding(horizontal = 8.dp),
-    backgroundColor = MaterialTheme.colors.surface
+    colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface)
   )
 }
 
@@ -292,9 +304,13 @@ private fun ColorPicker(
       fontWeight = FontWeight.Bold,
       modifier = Modifier.padding(8.dp)
     )
-    ScrollableColumn(modifier = Modifier.fillMaxWidth()) {
-      for (color in colors) {
-        ColorItem(color, onColorSelect)
+    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+      items(colors.size) { itemIndex ->
+        val color = colors[itemIndex]
+        ColorItem(
+          color = color,
+          onColorSelect = onColorSelect
+        )
       }
     }
   }

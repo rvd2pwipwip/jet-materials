@@ -47,6 +47,7 @@ import com.raywenderlich.android.jetnotes.domain.model.NoteModel
 import com.raywenderlich.android.jetnotes.util.fromHex
 
 @Composable
+@ExperimentalMaterialApi
 fun Note(
   modifier: Modifier = Modifier,
   note: NoteModel,
@@ -96,6 +97,7 @@ fun Note(
 
 @Preview
 @Composable
+@ExperimentalMaterialApi
 private fun NotePreview() {
   Note(note = NoteModel(1, "Note 1", "Content 1", null))
 }

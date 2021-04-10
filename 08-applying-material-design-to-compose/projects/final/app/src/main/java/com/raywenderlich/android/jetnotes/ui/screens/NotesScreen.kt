@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -17,8 +18,10 @@ import com.raywenderlich.android.jetnotes.routing.Screen
 import com.raywenderlich.android.jetnotes.ui.components.AppDrawer
 import com.raywenderlich.android.jetnotes.ui.components.Note
 import com.raywenderlich.android.jetnotes.viewmodel.MainViewModel
+import kotlinx.coroutines.launch
 
 @Composable
+@ExperimentalMaterialApi
 fun NotesScreen(viewModel: MainViewModel) {
 
   val notes: List<NoteModel> by viewModel
@@ -26,6 +29,8 @@ fun NotesScreen(viewModel: MainViewModel) {
     .observeAsState(listOf())
 
   val scaffoldState: ScaffoldState = rememberScaffoldState()
+
+  val coroutineScope = rememberCoroutineScope()
 
   Scaffold(
     topBar = {
@@ -38,9 +43,12 @@ fun NotesScreen(viewModel: MainViewModel) {
         },
         navigationIcon = {
           IconButton(onClick = {
-            scaffoldState.drawerState.open()
+            coroutineScope.launch { scaffoldState.drawerState.open() }
           }) {
-            Icon(imageVector = Icons.Filled.List)
+            Icon(
+              imageVector = Icons.Filled.List,
+              contentDescription = "Drawer Button"
+            )
           }
         }
       )
@@ -50,7 +58,7 @@ fun NotesScreen(viewModel: MainViewModel) {
       AppDrawer(
         currentScreen = Screen.Notes,
         closeDrawerAction = {
-          scaffoldState.drawerState.close()  // here - Drawer close
+          coroutineScope.launch { scaffoldState.drawerState.close() } // here - Drawer close
         }
       )
     },
@@ -59,10 +67,15 @@ fun NotesScreen(viewModel: MainViewModel) {
       FloatingActionButton(
         onClick = { viewModel.onCreateNewNoteClick() },
         contentColor = MaterialTheme.colors.background,
-        content = { Icon(Icons.Filled.Add) }
+        content = {
+          Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = "Add Note Button"
+          )
+        }
       )
     },
-    bodyContent = {
+    content = {
       if (notes.isNotEmpty()) {
         NotesList(
           notes = notes,
@@ -77,29 +90,29 @@ fun NotesScreen(viewModel: MainViewModel) {
 }
 
 @Composable
+@ExperimentalMaterialApi
 private fun NotesList(
   notes: List<NoteModel>,
   onNoteCheckedChange: (NoteModel) -> Unit,
   onNoteClick: (NoteModel) -> Unit
 ) {
   LazyColumn {
-    items(
-      items = notes,
-      itemContent = { note ->
-        val bottomPadding = if (notes.last() == note) 72.dp else 0.dp
-        Note(
-          modifier = Modifier.padding(bottom = bottomPadding),
-          note = note,
-          onNoteClick = onNoteClick,
-          onNoteCheckedChange = onNoteCheckedChange
-        )
-      }
-    )
+    items(count = notes.size) { noteIndex ->
+      val note = notes[noteIndex]
+      val bottomPadding = if (notes.last() == note) 72.dp else 0.dp
+      Note(
+        modifier = Modifier.padding(bottom = bottomPadding),
+        note = note,
+        onNoteClick = onNoteClick,
+        onNoteCheckedChange = onNoteCheckedChange
+      )
+    }
   }
 }
 
 @Preview
 @Composable
+@ExperimentalMaterialApi
 private fun NotesListPreview() {
   NotesList(
     notes = listOf(

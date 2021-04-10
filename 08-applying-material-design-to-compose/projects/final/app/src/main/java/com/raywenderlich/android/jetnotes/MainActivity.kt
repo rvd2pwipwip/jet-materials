@@ -34,19 +34,18 @@
 package com.raywenderlich.android.jetnotes
 
 import  android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Providers
-import androidx.compose.ui.platform.setContent
 import com.raywenderlich.android.jetnotes.routing.JetNotesRouter
 import com.raywenderlich.android.jetnotes.routing.Screen
 import com.raywenderlich.android.jetnotes.theme.JetNotesTheme
 import com.raywenderlich.android.jetnotes.ui.screens.NotesScreen
 import com.raywenderlich.android.jetnotes.ui.screens.SaveNoteScreen
 import com.raywenderlich.android.jetnotes.ui.screens.TrashScreen
-import com.raywenderlich.android.jetnotes.util.BackPressedDispatcher
 import com.raywenderlich.android.jetnotes.viewmodel.MainViewModel
 import com.raywenderlich.android.jetnotes.viewmodel.MainViewModelFactory
 
@@ -62,20 +61,20 @@ class MainActivity : AppCompatActivity() {
     )
   })
 
+  @ExperimentalMaterialApi
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     setContent {
-      Providers(BackPressedDispatcher provides this) {
-        JetNotesTheme {
-          MainActivityScreen(viewModel = viewModel)
-        }
+      JetNotesTheme {
+        MainActivityScreen(viewModel = viewModel)
       }
     }
   }
 }
 
 @Composable
+@ExperimentalMaterialApi
 private fun MainActivityScreen(viewModel: MainViewModel) {
   Surface {
     when (JetNotesRouter.currentScreen) {

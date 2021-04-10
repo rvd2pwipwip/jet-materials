@@ -88,8 +88,10 @@ fun AppDrawer(
 private fun AppDrawerHeader() {
   Row(modifier = Modifier.fillMaxWidth()) {
     Image(
-      imageVector = Icons.Filled.Menu, colorFilter = ColorFilter
-        .tint(MaterialTheme.colors.onSurface), modifier = Modifier.padding(16.dp)
+      imageVector = Icons.Filled.Menu,
+      contentDescription = "Drawer Header Icon",
+      colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
+      modifier = Modifier.padding(16.dp)
     )
     Text(
       text = "JetNotes",
@@ -136,13 +138,17 @@ private fun ScreenNavigationButton(
       horizontalArrangement = Arrangement.Start,
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-        .clickable(onClick = onClick).fillMaxWidth().padding(4.dp)
+        .clickable(onClick = onClick)
+        .fillMaxWidth()
+        .padding(4.dp)
     ) {
       Image(
         imageVector = icon,
-        colorFilter = ColorFilter.tint(textColor), alpha = imageAlpha
+        contentDescription = "Screen Navigation Button",
+        colorFilter = ColorFilter.tint(textColor),
+        alpha = imageAlpha
       )
-      Spacer(Modifier.preferredWidth(16.dp))
+      Spacer(Modifier.width(16.dp))
       Text(
         text = label,
         style = MaterialTheme.typography.body2, color = textColor,

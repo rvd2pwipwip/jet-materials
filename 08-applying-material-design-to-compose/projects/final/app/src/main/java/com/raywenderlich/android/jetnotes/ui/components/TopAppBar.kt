@@ -38,6 +38,7 @@ fun TopAppBar(
   ) {
     Image(
       imageVector = icon,
+      contentDescription = "Top App Bar Icon",
       colorFilter = ColorFilter
         .tint(MaterialTheme.colors.onPrimary),
       modifier = Modifier
