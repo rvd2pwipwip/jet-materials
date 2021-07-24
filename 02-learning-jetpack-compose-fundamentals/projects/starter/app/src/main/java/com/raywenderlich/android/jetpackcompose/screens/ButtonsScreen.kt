@@ -34,21 +34,38 @@
 
 package com.raywenderlich.android.jetpackcompose.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.raywenderlich.android.jetpackcompose.R
 import com.raywenderlich.android.jetpackcompose.router.BackButtonHandler
 import com.raywenderlich.android.jetpackcompose.router.JetFundamentalsRouter
 import com.raywenderlich.android.jetpackcompose.router.Screen
 
 @Composable
 fun ExploreButtonsScreen() {
-  Column(modifier = Modifier.fillMaxSize(),
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center) {
+  Column(
+    modifier = Modifier.fillMaxSize(),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(
+      space = 20.dp,
+      alignment = Alignment.CenterVertically
+    )
+  ) {
 
     MyButton()
     MyRadioGroup()
@@ -62,15 +79,71 @@ fun ExploreButtonsScreen() {
 
 @Composable
 fun MyButton() {
-  //TODO add your code here
+  Button(
+    onClick = { /*TODO*/ },
+    colors = ButtonDefaults.buttonColors(
+      backgroundColor = colorResource(id = R.color.colorPrimary),
+      contentColor = Color.White
+    ),
+    border = BorderStroke(
+      width = 1.dp,
+      color = colorResource(id = R.color.colorPrimaryDark)
+    ),
+    shape = RoundedCornerShape(50)
+  ) {
+    Text(
+      text = stringResource(id = R.string.button_text),
+      fontWeight = FontWeight.Normal
+//            color = Color.White
+    )
+  }
 }
 
 @Composable
 fun MyRadioGroup() {
-  //TODO add your code here
+  val radioButtons = listOf("dude", "dudette", "dunno")
+  val selectedButton = remember { mutableStateOf(radioButtons.first()) }
+
+  Column(
+//    Modifier.fillMaxWidth()
+  ) {
+    radioButtons.forEach { label ->
+      val isSelected = label == selectedButton.value
+      val colors = RadioButtonDefaults.colors(
+        selectedColor = colorResource(id = R.color.colorAccent),
+        unselectedColor = colorResource(id = R.color.colorPrimaryDark),
+        disabledColor = Color.LightGray
+      )
+
+      Row(
+//        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+//        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+      ) {
+        RadioButton(
+          colors = colors,
+          selected = isSelected,
+          onClick = { selectedButton.value = label }
+        )
+        Text(
+          text = label,
+          color = if (isSelected) colorResource(id = R.color.colorAccent)
+          else colorResource(id = R.color.colorPrimaryDark)
+        )
+      }
+    }
+  }
 }
 
 @Composable
 fun MyFloatingActionButton() {
-  //TODO add your code here
+  FloatingActionButton(
+    onClick = { /*TODO*/ },
+    backgroundColor = colorResource(id = R.color.colorAccent),
+    contentColor = Color.White,
+    content = {
+      Icon(imageVector = Icons.Filled.Add)
+    }
+  )
 }
