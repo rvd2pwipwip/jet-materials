@@ -34,11 +34,20 @@
 
 package com.raywenderlich.android.jetpackcompose.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
+import com.raywenderlich.android.jetpackcompose.R
 import com.raywenderlich.android.jetpackcompose.router.BackButtonHandler
 import com.raywenderlich.android.jetpackcompose.router.JetFundamentalsRouter
 import com.raywenderlich.android.jetpackcompose.router.Screen
@@ -57,5 +66,14 @@ fun SurfaceScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun MySurface(modifier: Modifier) {
-  //TODO write your code here
+  Surface(
+    modifier = modifier.size(100.dp), // 1
+    shape = RoundedCornerShape(10),
+    color = Color.LightGray, // 2
+    contentColor = colorResource(id = R.color.colorPrimary), // 2
+    elevation = 10.dp, // 3
+    border = BorderStroke(3.dp, colorResource(id = R.color.colorAccent)) // 4
+  ) {
+    MyColumn() // 5
+  }
 }
