@@ -34,7 +34,28 @@
 
 package com.raywenderlich.android.jetpackcompose.screens
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
+
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.painter.Painter
+
+
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+
+import androidx.compose.ui.unit.dp
+import com.raywenderlich.android.jetpackcompose.R
 import com.raywenderlich.android.jetpackcompose.router.BackButtonHandler
 import com.raywenderlich.android.jetpackcompose.router.JetFundamentalsRouter
 import com.raywenderlich.android.jetpackcompose.router.Screen
@@ -50,6 +71,51 @@ fun ScrollingScreen() {
 }
 
 @Composable
-fun MyScrollingScreen() {
-  //TODO add your code here
+fun MyScrollingScreen(modifier: Modifier = Modifier) {
+  Column(
+    modifier = modifier
+      .verticalScroll(rememberScrollState())
+      .padding(all = 10.dp),
+    verticalArrangement = Arrangement.spacedBy(20.dp)
+  ) {
+
+//  Row(
+//    modifier = modifier
+//      .horizontalScroll(rememberScrollState())
+//      .padding(all = 30.dp),
+//    horizontalArrangement = Arrangement.spacedBy(10.dp)
+//  ) {
+    BookImage(
+      R.drawable.advanced_architecture_android,
+//      R.string.advanced_architecture_android
+    )
+    BookImage(
+      R.drawable.kotlin_aprentice,
+//      R.string.kotlin_apprentice
+    )
+    BookImage(
+      R.drawable.kotlin_coroutines,
+//      R.string.kotlin_coroutines
+    )
+  }
+}
+
+//@Composable
+//fun BookImage(@DrawableRes imageResId: Int, @StringRes contentDescriptionResId: Int){
+//  Image(
+//    bitmap = ImageBitmap.imageResource(imageResId),
+//    contentDescription = stringResource(contentDescriptionResId),
+//    contentScale = ContentScale.FillBounds,
+//    modifier = Modifier.size(476.dp, 616.dp)
+//  )
+//}
+
+
+@Composable
+fun BookImage(@DrawableRes imageResId: Int) {
+  Image(
+    painter = painterResource(id = imageResId),
+    modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+    contentScale = ContentScale.Fit,
+  )
 }

@@ -26,4 +26,7 @@
   <string name="kotlin">"Kotlin"</string>
   <string name="swift">"Swift"</string>
   <string name="ios">"iOS"</string>
+  <string name="advanced_architecture_android">Advanced Architecture Android</string>
+  <string name="kotlin_apprentice">Kotlin Apprentice</string>
+  <string name="kotlin_coroutines">Kotlin Coroutines</string>
 </resources>

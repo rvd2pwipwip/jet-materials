@@ -34,47 +34,66 @@
 
 package com.raywenderlich.android.jetpackcompose.screens
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.raywenderlich.android.jetpackcompose.R
 import com.raywenderlich.android.jetpackcompose.router.BackButtonHandler
 import com.raywenderlich.android.jetpackcompose.router.JetFundamentalsRouter
 import com.raywenderlich.android.jetpackcompose.router.Screen
 
+data class BookCategory(@StringRes val categoryResourceId: Int, val bookImageResources: List<Int>)
+
 private val items = listOf(
-    BookCategory(
-        R.string.android,
-        listOf(
-            R.drawable.android_aprentice,
-            R.drawable.saving_data_android,
-            R.drawable.advanced_architecture_android
-        )
-    ),
-    BookCategory(
-        R.string.kotlin,
-        listOf(
-            R.drawable.kotlin_coroutines,
-            R.drawable.kotlin_aprentice
-        )
-    ),
-    BookCategory(
-        R.string.swift,
-        listOf(
-            R.drawable.combine,
-            R.drawable.rx_swift,
-            R.drawable.swift_apprentice,
-        )
-    ),
-    BookCategory(
-        R.string.ios,
-        listOf(
-            R.drawable.core_data,
-            R.drawable.ios_apprentice,
-        )
+  BookCategory(
+    R.string.android,
+    listOf(
+      R.drawable.android_aprentice,
+      R.drawable.saving_data_android,
+      R.drawable.advanced_architecture_android
     )
+  ),
+  BookCategory(
+    R.string.kotlin,
+    listOf(
+      R.drawable.kotlin_coroutines,
+      R.drawable.kotlin_aprentice
+    )
+  ),
+  BookCategory(
+    R.string.swift,
+    listOf(
+      R.drawable.combine,
+      R.drawable.rx_swift,
+      R.drawable.swift_apprentice,
+    )
+  ),
+  BookCategory(
+    R.string.ios,
+    listOf(
+      R.drawable.core_data,
+      R.drawable.ios_apprentice,
+    )
+  )
 )
 
+@ExperimentalFoundationApi
 @Composable
 fun ListScreen() {
   MyList()
@@ -84,14 +103,65 @@ fun ListScreen() {
   }
 }
 
+@ExperimentalFoundationApi
 @Composable
 fun MyList() {
-  //TODO add your code here
+  LazyColumn(
+      contentPadding = PaddingValues(top = 30.dp, bottom = 60.dp),
+      verticalArrangement = Arrangement.spacedBy(20.dp)
+  ) {
+    items(items = items) { item ->
+      ListItem(bookCategory = item)
+    }
+  }
+}
+
+@ExperimentalFoundationApi //stickyHeader is experimental
+@Composable
+fun ListItem(bookCategory: BookCategory, modifier: Modifier = Modifier) {
+  Column(
+      verticalArrangement = Arrangement.spacedBy(8.dp)
+  ) {
+    Text(
+      text = stringResource(id = bookCategory.categoryResourceId),
+      modifier = modifier.padding(start = 30.dp),
+      fontSize = 22.sp,
+      fontWeight = FontWeight.Bold,
+      color = colorResource(id = R.color.colorPrimary),
+    )
+    LazyRow(
+      modifier = modifier.height(260.dp),
+      contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
+      horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+      itemsIndexed(items = bookCategory.bookImageResources) { index, items ->
+        NumberedBookImage(imageResId = items, index)
+      }
+//      stickyHeader {
+//        Text(
+//          text = stringResource(id = bookCategory.categoryResourceId),
+//          modifier = modifier.padding(start = 30.dp),
+//          fontSize = 22.sp,
+//          fontWeight = FontWeight.Bold,
+//          color = colorResource(id = R.color.colorPrimary),
+//        )
+//      }
+    }
+  }
 }
 
 @Composable
-fun ListItem(bookCategory: BookCategory, modifier: Modifier = Modifier) {
-  //TODO add your code here
+fun NumberedBookImage(@DrawableRes imageResId: Int, index: Int) {
+  Box {
+    Image(
+      painter = painterResource(id = imageResId),
+      modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+      contentScale = ContentScale.Fit,
+    )
+    Text(
+      text = index.plus(1).toString(),
+      fontSize = 36.sp,
+      fontWeight = FontWeight.Black,
+    )
+  }
 }
-
-data class BookCategory(@StringRes val categoryResourceId: Int, val bookImageResources: List<Int>)
