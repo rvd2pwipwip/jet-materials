@@ -46,6 +46,7 @@ import com.raywenderlich.android.jetnotes.routing.Screen
 import com.raywenderlich.android.jetnotes.theme.JetNotesTheme
 import com.raywenderlich.android.jetnotes.ui.components.AppDrawer
 import com.raywenderlich.android.jetnotes.ui.components.Note
+import com.raywenderlich.android.jetnotes.ui.screens.NotesScreen
 
 /**
  * Main activity for the app.
@@ -64,21 +65,22 @@ class MainActivity : AppCompatActivity() {
 
     setContent {
       JetNotesTheme {
-        val scaffoldState: ScaffoldState = rememberScaffoldState()
-        Scaffold(
-          scaffoldState = scaffoldState,
-          drawerContent = {
-            AppDrawer(
-              currentScreen = Screen.Notes,
-              closeDrawerAction = {
-                scaffoldState.drawerState.close()
-              }
-            )
-          },
-          bodyContent = {
-            Note()
-          }
-        )
+        NotesScreen(viewModel = viewModel)
+//        val scaffoldState: ScaffoldState = rememberScaffoldState()
+//        Scaffold(
+//          scaffoldState = scaffoldState,
+//          drawerContent = {
+//            AppDrawer(
+//              currentScreen = Screen.Notes,
+//              closeDrawerAction = {
+//                scaffoldState.drawerState.close()
+//              }
+//            )
+//          },
+//          bodyContent = {
+//            Note()
+//          }
+//        )
       }
     }
   }
