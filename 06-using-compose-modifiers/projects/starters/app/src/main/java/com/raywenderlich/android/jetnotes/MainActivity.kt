@@ -34,19 +34,23 @@
 package com.raywenderlich.android.jetnotes
 
 import android.os.Bundle
+
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.*
 import androidx.compose.ui.platform.setContent
 import com.raywenderlich.android.jetnotes.viewmodel.MainViewModel
 import com.raywenderlich.android.jetnotes.viewmodel.MainViewModelFactory
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.BlendMode
+import com.raywenderlich.android.jetnotes.routing.JetNotesRouter
 import com.raywenderlich.android.jetnotes.routing.Screen
 import com.raywenderlich.android.jetnotes.theme.JetNotesTheme
 import com.raywenderlich.android.jetnotes.ui.components.AppDrawer
 import com.raywenderlich.android.jetnotes.ui.components.Note
 import com.raywenderlich.android.jetnotes.ui.screens.NotesScreen
+import com.raywenderlich.android.jetnotes.ui.screens.SaveNoteScreen
+import com.raywenderlich.android.jetnotes.ui.screens.TrashScreen
 
 /**
  * Main activity for the app.
@@ -60,12 +64,13 @@ class MainActivity : AppCompatActivity() {
     )
   })
 
+  @ExperimentalMaterialApi
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     setContent {
       JetNotesTheme {
-        NotesScreen(viewModel = viewModel)
+        MainActivityScreen(viewModel = viewModel)
 //        val scaffoldState: ScaffoldState = rememberScaffoldState()
 //        Scaffold(
 //          scaffoldState = scaffoldState,
@@ -82,6 +87,18 @@ class MainActivity : AppCompatActivity() {
 //          }
 //        )
       }
+    }
+  }
+}
+
+@Composable
+@ExperimentalMaterialApi
+private fun MainActivityScreen(viewModel: MainViewModel) {
+  Surface {
+    when (JetNotesRouter.currentScreen) {
+      is Screen.Notes -> NotesScreen(viewModel = viewModel)
+      is Screen.SaveNote -> SaveNoteScreen(viewModel = viewModel)
+      is Screen.Trash -> TrashScreen(viewModel)
     }
   }
 }
