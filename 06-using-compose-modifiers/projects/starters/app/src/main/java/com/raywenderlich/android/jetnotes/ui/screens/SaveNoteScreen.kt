@@ -1,5 +1,7 @@
 package com.raywenderlich.android.jetnotes.ui.screens
 
+import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -7,15 +9,16 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.savedinstancestate.savedInstanceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.raywenderlich.android.jetnotes.domain.model.ColorModel
 import com.raywenderlich.android.jetnotes.domain.model.NEW_NOTE_ID
 import com.raywenderlich.android.jetnotes.domain.model.NoteModel
@@ -23,6 +26,7 @@ import com.raywenderlich.android.jetnotes.routing.JetNotesRouter
 import com.raywenderlich.android.jetnotes.routing.Screen
 import com.raywenderlich.android.jetnotes.theme.JetNotesTheme
 import com.raywenderlich.android.jetnotes.ui.components.NoteColor
+import com.raywenderlich.android.jetnotes.util.BackPressHandler
 import com.raywenderlich.android.jetnotes.util.fromHex
 import com.raywenderlich.android.jetnotes.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
@@ -45,6 +49,18 @@ fun SaveNoteScreen(viewModel: MainViewModel) {
 
   val coroutineScope = rememberCoroutineScope()
 
+  val moveNoteToTrashDialogShownState: MutableState<Boolean> = savedInstanceState { false }
+
+  //////// Doesn't work //////////////////
+
+//  BackPressHandler(onBackPressed = {
+//    if (bottomDrawerState.isOpen) {
+//      bottomDrawerState.close()
+//    } else {
+//      JetNotesRouter.navigateTo(Screen.Notes)
+//    }
+//  })
+
   Scaffold(
     topBar = {
       val isEditingMode: Boolean = noteEntry.id != NEW_NOTE_ID
@@ -55,16 +71,70 @@ fun SaveNoteScreen(viewModel: MainViewModel) {
         onOpenColorPickerClick = {
           coroutineScope.launch { bottomDrawerState.open() }
         },
-        onDeleteNoteClick = { viewModel.moveNoteToTrash(noteEntry) }
+//        onDeleteNoteClick = { viewModel.moveNoteToTrash(noteEntry) }
+        onDeleteNoteClick = { moveNoteToTrashDialogShownState.value = true  }
       )
     },
     bodyContent = {
-      SaveNoteContent(
-        note = noteEntry,
-        onNoteChange = { updateNoteEntry ->
-          viewModel.onNoteEntryChange(updateNoteEntry)
+      BottomDrawerLayout(
+        drawerContent = {
+          ColorPicker(
+            colors = colors,
+            onColorSelect = { color ->
+              val newNoteEntry = noteEntry.copy(color = color)
+              viewModel.onNoteEntryChange(newNoteEntry)
+            }
+          )
+        },
+        drawerState = bottomDrawerState,
+        bodyContent = {
+          SaveNoteContent(
+            note = noteEntry,
+            onNoteChange = { updateNoteEntry ->
+              viewModel.onNoteEntryChange(updateNoteEntry)
+            }
+          )
         }
       )
+
+      if (moveNoteToTrashDialogShownState.value) {
+        AlertDialog(
+          onDismissRequest = {
+            moveNoteToTrashDialogShownState.value = false
+          },
+          title = {
+            Text(
+              text = "Move note to the trash?"
+            )
+          },
+          text = {
+            Text(
+              "Are you sure you want to " +
+                      "move this note to the trash?"
+            )
+          },
+          confirmButton = {
+            TextButton(
+              onClick = {
+                viewModel.moveNoteToTrash(note = noteEntry) }
+            ) {
+              Text(
+                text = "Confirm"
+              )
+            }
+          },
+          dismissButton = {
+            TextButton(
+              onClick = {
+                moveNoteToTrashDialogShownState.value = false }
+            ) {
+              Text(
+                text = "Dismiss"
+              )
+            }
+          }
+        )
+      }
     }
   )
 }
@@ -223,6 +293,56 @@ private fun PickedColor(
       size = 40.dp,
       border = 1.dp,
       modifier = Modifier.padding(4.dp)
+    )
+  }
+}
+
+@Composable
+private fun ColorPicker(
+  colors: List<ColorModel>,
+  onColorSelect: (ColorModel) -> Unit
+) {
+  Column(modifier = Modifier.fillMaxWidth()) {
+    Text(
+      text = "Color picker",
+      fontSize = 18.sp,
+      fontWeight = FontWeight.Bold,
+      modifier = Modifier.padding(8.dp)
+    )
+    ScrollableColumn(modifier = Modifier.fillMaxWidth()) {
+      for (color in colors) {
+        ColorItem(color, onColorSelect)
+      }
+    }
+  }
+}
+
+@Composable
+fun ColorItem(
+  color: ColorModel,
+  onColorSelect: (ColorModel) -> Unit
+) {
+  Row(
+    modifier = Modifier
+      .fillMaxWidth()
+      .clickable(
+        onClick = {
+          onColorSelect.invoke(color)
+        }
+      )
+  ) {
+    NoteColor(
+      color = Color.fromHex(color.hex),
+      size = 80.dp,
+      border = 2.dp,
+      modifier = Modifier.padding(10.dp)
+    )
+    Text(
+      text = color.name,
+      fontSize = 22.sp,
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .align(Alignment.CenterVertically)
     )
   }
 }

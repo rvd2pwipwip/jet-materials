@@ -20,6 +20,7 @@ private const val NO_DIALOG = 1
 private const val RESTORE_NOTES_DIALOG = 2
 private const val PERMANENTLY_DELETE_DIALOG = 3
 
+@ExperimentalMaterialApi
 @Composable
 fun TrashScreen(viewModel: MainViewModel) {
 
@@ -133,6 +134,7 @@ private fun TrashTopAppBar(
   )
 }
 
+@ExperimentalMaterialApi
 @Composable
 private fun Content(
   notes: List<NoteModel>,

@@ -17,32 +17,53 @@ import com.raywenderlich.android.jetnotes.domain.model.NoteModel
 import com.raywenderlich.android.jetnotes.routing.Screen
 import com.raywenderlich.android.jetnotes.ui.components.AppDrawer
 import com.raywenderlich.android.jetnotes.ui.components.Note
-import com.raywenderlich.android.jetnotes.ui.components.TopAppBar
+//import com.raywenderlich.android.jetnotes.ui.components.TopAppBar
+//import androidx.compose.material.TopAppBar
 import com.raywenderlich.android.jetnotes.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
+@ExperimentalMaterialApi
 @Composable
 fun NotesScreen(viewModel: MainViewModel) {
   // Observing notes state from MainViewModel
   val notes: List<NoteModel> by viewModel.notesNotInTrash.observeAsState(listOf()) //pass listOf() to avoid List<R>?
 
-  // here - Drawer state
+  // Drawer state
   val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-  // here - Coroutine scope used for opening/closing the drawer
+  // Coroutine scope used for opening/closing the drawer
   val coroutineScope = rememberCoroutineScope()
 
   Scaffold(
     scaffoldState = scaffoldState,
     topBar = {
       TopAppBar(
-        title = stringResource(id = R.string.app_name),
-        icon = Icons.Filled.List,
-        onIconClick = {
-          scaffoldState.drawerState.open()
+        title = {
+          Text(
+            text = stringResource(id = R.string.app_name),
+            color = MaterialTheme.colors.onPrimary
+          )
+        },
+        navigationIcon = {
+          IconButton(onClick = {
+            coroutineScope.launch { scaffoldState.drawerState.open() }
+          }) {
+            Icon(
+              imageVector = Icons.Filled.List,
+            )
+          }
         }
       )
     },
+//    topBar = {
+//      TopAppBar(
+//        title = stringResource(id = R.string.app_name),
+//        icon = Icons.Filled.List,
+//        onIconClick = {
+//          scaffoldState.drawerState.open()
+//        }
+//      )
+//    },
     drawerContent = {
       AppDrawer(
         currentScreen = Screen.Notes,
@@ -79,6 +100,7 @@ fun NotesScreen(viewModel: MainViewModel) {
 }
 
 
+@ExperimentalMaterialApi
 @Composable
 private fun NotesList(
   notes: List<NoteModel>,
@@ -96,6 +118,7 @@ private fun NotesList(
   }
 }
 
+@ExperimentalMaterialApi
 @Preview(showBackground = true)
 @Composable
 private fun NotesListPreview() {
