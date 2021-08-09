@@ -46,8 +46,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -73,13 +75,51 @@ fun ImagePost(post: PostModel) {
 }
 
 @Composable
-fun Post(post: PostModel, content: @Composable () -> Unit = emptyContent()) {
-  //TODO add your code here
+fun Post(
+  post: PostModel,
+  content: @Composable () -> Unit = emptyContent()
+) {
+  Card(shape = MaterialTheme.shapes.large) {
+    Column(
+      modifier = Modifier.padding(vertical = 8.dp)
+    ) {
+      Header(post = post)
+      Spacer(modifier = Modifier.height(4.dp))
+      content.invoke()
+      Spacer(modifier = Modifier.height(8.dp))
+      PostActions(post = post)
+    }
+  }
 }
 
 @Composable
 fun Header(post: PostModel) {
-  //TODO add your code here
+  Row(
+    modifier = Modifier.padding(start = 16.dp)
+  ) {
+    Image(
+      bitmap = imageResource(id = R.drawable.subreddit_placeholder),
+      Modifier
+        .size(40.dp)
+        .clip(CircleShape)
+    )
+    Spacer(modifier = Modifier.width(8.dp))
+    Column(modifier = Modifier.weight(1f)) {
+      Text(
+        text = stringResource(id = R.string.subreddit_header, post.subreddit),
+        fontWeight = FontWeight.Medium,
+        color = MaterialTheme.colors.primaryVariant
+      )
+      Text(
+        text = stringResource(
+          id = R.string.post_header, post.username, post.postedTime
+        ),
+        color = Color.Gray
+      )
+    }
+    MoreActionsMenu()
+  }
+  Title(text = post.title)
 }
 
 @Composable
@@ -195,12 +235,43 @@ fun VotingAction(
   onUpVoteAction: () -> Unit,
   onDownVoteAction: () -> Unit
 ) {
-  //TODO add your code here
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    ArrowButton(
+      onClickAction = onUpVoteAction,
+      arrowResourceId = R.drawable.ic_baseline_arrow_upward_24
+    )
+
+    Text(
+      text = text,
+      color = Color.Gray,
+      fontWeight = FontWeight.Medium,
+      fontSize = 12.sp
+    )
+
+    ArrowButton(
+      onClickAction = onDownVoteAction,
+      arrowResourceId = R.drawable.ic_baseline_arrow_downward_24
+    )
+  }
 }
 
 @Composable
-fun ArrowButton(onClickAction: () -> Unit, arrowResourceId: Int) {
-  //TODO add your code here
+fun ArrowButton(
+  onClickAction: () -> Unit,
+  arrowResourceId: Int
+) {
+  IconButton(
+    onClick = onClickAction,
+    modifier = Modifier.size(30.dp)
+  ) {
+    Icon(
+      imageVector = vectorResource(
+        id = arrowResourceId
+      ),
+      modifier = Modifier.size(20.dp),
+      tint = Color.Gray
+    )
+  }
 }
 
 @Composable
@@ -238,7 +309,7 @@ fun PostActionPreview() {
   )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun HeaderPreview() {
   Column {
@@ -256,4 +327,20 @@ fun VotingActionPreview() {
 @Composable
 fun PostPreview() {
   Post(DEFAULT_POST)
+}
+
+@Preview
+@Composable
+fun ImagePostPreview() {
+  Post(DEFAULT_POST) {
+    ImageContent(DEFAULT_POST.image ?: R.drawable.compose_course)
+  }
+}
+
+@Preview
+@Composable
+fun TextPostPreview() {
+  Post(DEFAULT_POST) {
+    TextContent(DEFAULT_POST.text ?: "Text content")
+  }
 }
