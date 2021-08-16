@@ -60,21 +60,31 @@ import com.raywenderlich.android.jetreddit.domain.model.PostModel
 import com.raywenderlich.android.jetreddit.domain.model.PostModel.Companion.DEFAULT_POST
 
 @Composable
-fun TextPost(post: PostModel) {
-  Post(post) {
+fun TextPost(
+  post: PostModel,
+  onJoinButtonClick: (Boolean) -> Unit = {}
+) {
+  Post(post, onJoinButtonClick) {
     TextContent(post.text)
   }
 }
 
 @Composable
-fun ImagePost(post: PostModel) {
-  Post(post) {
-    ImageContent(post.image ?: R.drawable.compose_course)
+fun ImagePost(
+  post: PostModel,
+  onJoinButtonClick: (Boolean) -> Unit = {}
+) {
+  Post(post, onJoinButtonClick) {
+    ImageContent(post.image!!)
   }
 }
 
 @Composable
-fun Post(post: PostModel, content: @Composable () -> Unit = emptyContent()) {
+fun Post(
+  post: PostModel,
+  onJoinButtonClick: (Boolean) -> Unit = {},
+  content: @Composable () -> Unit = emptyContent()
+) {
   Card(shape = MaterialTheme.shapes.large) {
     Column(
       modifier = Modifier.padding(
@@ -82,7 +92,7 @@ fun Post(post: PostModel, content: @Composable () -> Unit = emptyContent()) {
         bottom = 8.dp
       )
     ) {
-      Header(post)
+      Header(post, onJoinButtonClick)
       Spacer(modifier = Modifier.height(4.dp))
       content.invoke()
       Spacer(modifier = Modifier.height(8.dp))
@@ -92,11 +102,18 @@ fun Post(post: PostModel, content: @Composable () -> Unit = emptyContent()) {
 }
 
 @Composable
-fun Header(post: PostModel) {
-  Row(modifier = Modifier.padding(start = 16.dp)) {
+fun Header(
+  post: PostModel,
+  onJoinButtonClick: (Boolean) -> Unit = {}
+) {
+  Row(
+    modifier = Modifier.padding(start = 16.dp),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
     Image(
       imageResource(id = R.drawable.subreddit_placeholder),
-      Modifier.size(40.dp)
+      Modifier
+        .size(40.dp)
         .clip(CircleShape)
     )
     Spacer(modifier = Modifier.width(8.dp))
@@ -111,6 +128,8 @@ fun Header(post: PostModel) {
         color = Color.Gray
       )
     }
+    Spacer(modifier = Modifier.width(4.dp))
+    JoinButton(onJoinButtonClick)
     MoreActionsMenu()
   }
 
