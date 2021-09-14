@@ -35,6 +35,7 @@ package com.raywenderlich.android.jetreddit
 
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.foundation.layout.padding
@@ -128,6 +129,7 @@ fun TopAppBar(scaffoldState: ScaffoldState) {
   )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun MainScreenContainer(
   modifier: Modifier = Modifier,
